@@ -341,6 +341,23 @@ cc_library(
 )
 
 cc_library(
+    name = "ipu_config",
+    srcs = [
+        "ipu_config.cc",
+    ],
+    hdrs = [
+        "ipu_config.h",
+    ],
+    visibility = [
+        "//tensorflow_serving:internal",
+    ],
+    deps = [
+        "@org_tensorflow//tensorflow/core:lib",
+        "@org_tensorflow//tensorflow/compiler/plugin/poplar:driver",
+    ],
+)
+
+cc_library(
     name = "tensorflow_model_server_main_lib",
     srcs = [
         "main.cc",
@@ -354,6 +371,7 @@ cc_library(
         "//tensorflow_serving:internal",
     ],
     deps = [
+        ":ipu_config",
         ":server_lib",
         "@org_tensorflow//tensorflow/c:c_api",
         "@org_tensorflow//tensorflow/core:lib",

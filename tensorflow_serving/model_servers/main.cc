@@ -52,9 +52,12 @@ limitations under the License.
 #include "tensorflow/core/util/command_line_flags.h"
 #include "tensorflow_serving/model_servers/server.h"
 #include "tensorflow_serving/model_servers/version.h"
+#include "tensorflow_serving/model_servers/ipu_config.h"
 
 int main(int argc, char** argv) {
   tensorflow::serving::main::Server::Options options;
+  tensorflow::serving::IpuConfig ipu_config;
+
   bool display_version = false;
   std::vector<tensorflow::Flag> flag_list = {
       tensorflow::Flag("port", &options.grpc_port,
@@ -192,7 +195,9 @@ int main(int argc, char** argv) {
                        "EXPERIMENTAL; CAN BE REMOVED ANYTIME! Load and use "
                        "TensorFlow Lite model from `model.tflite` file in "
                        "SavedModel directory instead of the TensorFlow model "
-                       "from `saved_model.pb` file.")};
+                       "from `saved_model.pb` file."),
+      tensorflow::Flag("num_ipus", &ipu_config.num_ipus,
+                       "Number ipus to use.")};
 
   const auto& usage = tensorflow::Flags::Usage(argv[0], flag_list);
   if (!tensorflow::Flags::Parse(&argc, argv, flag_list)) {
@@ -205,6 +210,8 @@ int main(int argc, char** argv) {
               << "TensorFlow Library: " << TF_Version() << "\n";
     return 0;
   }
+
+  ipu_config.ConfigIpu();
 
   tensorflow::port::InitMain(argv[0], &argc, &argv);
   if (argc != 1) {
